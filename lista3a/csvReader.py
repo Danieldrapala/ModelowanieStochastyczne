@@ -54,17 +54,17 @@ def drawPricePlotsForEachHour(k):
     plt.show()
 
 
-# drawPricesPlotsForEachDay(2)
-# drawPricesPlotsForEachDay(7)
-# drawPricePlotsForEachHour(2)
-# drawPricePlotsForEachHour(7)
-#
-# drawLoadPlotsForEachDay(2)
-# drawLoadPlotsForEachDay(7)
-# drawLoadPlotsForEachHour(2)
-# drawLoadPlotsForEachHour(7)
+drawPricesPlotsForEachDay(2)
+drawPricesPlotsForEachDay(7)
+drawPricePlotsForEachHour(2)
+drawPricePlotsForEachHour(7)
+
+drawLoadPlotsForEachDay(2)
+drawLoadPlotsForEachDay(7)
+drawLoadPlotsForEachHour(2)
+drawLoadPlotsForEachHour(7)
 #Tygodniowe
-def drawPlotForEachWeek():
+def drawPlotForEachDayOfTheWeek():
     df = pd.read_csv('EPEX.csv', header=None)
     df = df.groupby(0, sort=False)[[2, 3]].mean()
     week = df.groupby(3, sort=True)[2].apply(list).tolist()
@@ -77,7 +77,16 @@ def drawPlotForEachWeek():
     plt.xticks(np.arange(1, 8), calendar.day_name)
     plt.show()
 
+def drawPlotForEachWeek():
+    df = pd.read_csv('EPEX.csv', header=None)
+    df = df.groupby(0, sort=False)[[2, 3]].mean()
+    week = df.groupby(3, sort=True)[2].apply(list).tolist()
+    for day in week:
+        plt.plot(np.linspace(1,7, len(day)),
+                 day)
+    plt.xticks(np.arange(1, 8), calendar.day_name)
+    plt.show()
 
+drawPlotForEachDayOfTheWeek()
 drawPlotForEachWeek()
-
 
