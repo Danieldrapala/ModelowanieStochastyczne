@@ -1,98 +1,98 @@
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import calendar
-import numpy as np
-import pandas as pd
+import datetime as dat
 
-
-def readEPEXForSpecificDay(k):
-    epex = pd.read_csv('EPEX.csv', header=None)
-    epexOnSpecificDay = epex[epex[3] == k]
-    return epexOnSpecificDay
-
-
-def getValueForEachDay(k, column):
-    dataNotGrupped = readEPEXForSpecificDay(k)
-    price = dataNotGrupped.groupby(0, sort=False)[column].apply(list).tolist()
-    return price
-
-
-def getValueForEachHour(k, column):
-    dataNotGrupped = readEPEXForSpecificDay(k)
-    price = dataNotGrupped.groupby(1, sort=False)[column].apply(list).tolist()
-    return price
-
-
-def drawPricesPlotsForEachDay(k):
-    Os_x = [x for x in range(1, 25)]
-    thursdayList = getValueForEachDay(k, 2)
-    for day in thursdayList:
-        plt.plot(Os_x, day)
+def dni(data1, day, val1):
+    days = data1[data1.day_week == day].reset_index()
+    wday1 = days.datetime[a].strftime('%A')
+    plt.title('seasonal plot 1: ' + wday1 +'s '+val1)
+    days = np.array(days.pivot('HH', 'datetime', val1))
+    plt.plot(days)
+    plt.savefig('seasonal plot 1- %s s %s' % (wday1, val1), dpi=300)
     plt.show()
 
-
-def drawLoadPlotsForEachDay(k):
-    Os_x = [x for x in range(1, 25)]
-    thursdayList = getValueForEachDay(k, 4)
-    for day in thursdayList:
-        plt.plot(Os_x, day)
+def dni2(data3, day1, val3):
+    days = data3[data3.day_week == day1].reset_index()
+    wday2 = days.datetime[a].strftime('%A')
+    plt.title('seasonal plot 2: ' + wday2 + 's '+val3)
+    days = days.pivot('HH', 'datetime', val3)
+    days = (days.transpose())
+    for i in days.columns:
+        session = days[i]
+        term = np.linspace(i, i + 1, len(session))
+        plt.plot(term, session)
+        plt.plot(term, np.full_like(term, session.mean()))
+    plt.savefig('seasonal plot 2- %ss %s' %(wday2, val3), dpi=300)
     plt.show()
 
-
-def drawLoadPlotsForEachHour(k):
-    thursdayList = getValueForEachHour(k, 4)
-    i = 1
-    for day in thursdayList:
-        plt.plot(np.linspace(i - 0.5, i + 0.5, len(day)), day)
-        i += 1
+def tyg(data2, val2):
+    data2 = ((df.groupby("datetime").mean()).drop(['HH'], 1)).reset_index()
+    wek = 0
+    week = []
+    for r in range(len(data2.datetime)):
+        if data2.day_week[r] == 1:
+            wek += 1
+        week.append(wek)
+    week = pd.DataFrame({'week_no': (np.array(week))})
+    data2 = pd.concat([data2, week], 1)
+    data2 = np.array(data2.pivot('day_week', 'week_no', val2))
+    plt.title('seasonal plot 1, weeks ' + val2)
+    plt.plot(list(calendar.day_name), data2)
+    plt.savefig('seasonal plot 1, weeks %s.png' % val2, dpi=300)
     plt.show()
 
-
-def drawPricePlotsForEachHour(k):
-    thursdayList = getValueForEachHour(k, 2)
-    i = 1
-    for day in thursdayList:
-        plt.plot(np.linspace(i - 0.5, i + 0.5, len(day)), day)
-        i += 1
+def tyg2(data4, val4):
+    data4 = ((df.groupby("datetime").mean()).drop(['HH'], 1)).reset_index()
+    wek = 0
+    week = []
+    for r in range(len(data4.datetime)):
+        if data4.day_week[r] == 1:
+            wek += 1
+        week.append(wek)
+    week = pd.DataFrame({'week_no': (np.array(week))})
+    data4 = pd.concat([data4, week], 1)
+    data4 = (data4.pivot('day_week', 'week_no', val4))
+    data4 = (data4.transpose())
+    for i in data4.columns:
+        session = data4[i]
+        term = np.linspace(i-1, i, len(session))
+        plt.plot(term, session)
+        plt.plot(term, np.full_like(term, session.mean()))
+    plt.title('seasonal plot 2, weeks ' + val4)
+    plt.savefig('seasonal plot 2, weeks %s.png' %val4, dpi=300)
     plt.show()
 
+data = pd.read_csv("NP2018.csv", ',', header=None, names=['YYMD', 'HH', 'Sys_p', 'Sys_Load'],
+                   usecols=[0,1,2,3], dtype={'YYMD': int, 'HH': int})
 
-drawPricesPlotsForEachDay(2)
-drawPricesPlotsForEachDay(7)
-drawPricePlotsForEachHour(2)
-drawPricePlotsForEachHour(7)
-
-drawLoadPlotsForEachDay(2)
-drawLoadPlotsForEachDay(7)
-drawLoadPlotsForEachHour(2)
-drawLoadPlotsForEachHour(7)
-
-
-# Tygodniowe
-def drawPlotForEachDayOfTheWeek():
-    df = pd.read_csv('EPEX.csv', header=None)
-    df = df.groupby(0, sort=False)[[2, 3]].mean()
-    week = df.groupby(3, sort=True)[2].apply(list).tolist()
-    print(df)
-    i = 1
-    for day in week:
-        plt.plot(np.linspace(i - 0.5, i + 0.5, len(day)),
-                 day)
-        i += 1
-    plt.xticks(np.arange(1, 8), calendar.day_name)
-    plt.show()
+ymdhw = []
+d = []
+for i in range(len(data.YYMD)):
+    a = (int(dat.datetime.strptime(str(int(data.YYMD[i])), '%Y%m%d').strftime('%Y')))
+    b = (int(dat.datetime.strptime(str(int(data.YYMD[i])), '%Y%m%d').strftime('%m')))
+    c = (int(dat.datetime.strptime(str(int(data.YYMD[i])), '%Y%m%d').strftime('%d')))
+    ymdhw.append(pd.Timestamp.date(dat.datetime(a, b, c)))
+    d.append(int(ymdhw[i].strftime('%w'))+1)
+d = pd.DataFrame({'day_week': np.array(d)})
+ymdhw = np.array(ymdhw)
+ymdhw = pd.DataFrame({'datetime': ymdhw})
+df = pd.concat([ymdhw, data], 1)
+df = pd.concat([df, d], 1)
 
 
-def drawPlotForEachWeek():
-    df = pd.read_csv('NP2018.csv', header=None)
-    df = df.groupby(0, sort=False)[[2, 3]].mean()
-    week = df.groupby(3, sort=True)[2].apply(list).tolist()
-    for day in week:
-        plt.plot(np.linspace(1, 7, len(day)),
-                 day)
-    plt.xticks(np.arange(1, 8), calendar.day_name)
-    plt.show()
 
+dni(df, 2, 'Sys_p')
+dni2(df, 2, 'Sys_p')
+dni(df, 7, 'Sys_p')
+dni2(df, 7, 'Sys_p')
+dni(df, 2, 'Sys_Load')
+dni2(df, 2, 'Sys_Load')
+dni(df, 7, 'Sys_Load')
+dni2(df, 7, 'Sys_Load')
 
-drawPlotForEachDayOfTheWeek()
-drawPlotForEachWeek()
-
+tyg(df, 'Sys_p')
+tyg2(df, 'Sys_p')
+tyg(df, 'Sys_Load')
+tyg2(df, 'Sys_Load')

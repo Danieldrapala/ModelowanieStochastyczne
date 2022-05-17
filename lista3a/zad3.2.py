@@ -15,12 +15,12 @@ def pdk(data, k):
     plt.show()
 
 
-data = pd.read_csv("NP2018.csv", '\s+', header=None, names=['YYMMDD', 'HH', 'Sys_p', 'Sys_load'],
+data = pd.read_csv("NP2018.csv", ',', header=None, names=['YYMMDD', 'HH', 'Sys_p', 'Sys_load'],
                    usecols=[0,1,2,3], dtype={'YYMMDD': int, 'HH': int})
 
 ymdhw = []
 d = []
-for i in range(len(data.YYMD)):
+for i in range(len(data.YYMMDD)):
     a = (int(dat.datetime.strptime(str(int(data.YYMMDD[i])), '%Y%m%d').strftime('%Y')))
     b = (int(dat.datetime.strptime(str(int(data.YYMMDD[i])), '%Y%m%d').strftime('%m')))
     c = (int(dat.datetime.strptime(str(int(data.YYMMDD[i])), '%Y%m%d').strftime('%d')))
